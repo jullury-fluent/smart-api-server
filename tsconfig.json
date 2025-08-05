@@ -1,21 +1,23 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
     "declaration": true,
+    "outDir": "dist",
+    "module": "commonjs",
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "esnext",
+    "target": "es2017",
     "sourceMap": true,
-    "outDir": "./dist",
     "baseUrl": "./",
+    "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "nodenext"
-  }
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false
+  },
+  "include": ["src/**/*", "tests/build-additional-filters.spec.ts", "tests/build-sort.spec.ts", "tests/build-where-clause.spec.ts", "tests/searchable-fields.spec.ts", "tests/nested-to-dot-object.spec.ts"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

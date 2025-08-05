@@ -1,76 +1,103 @@
-# EquiSafe Packages Templates
+# @smart-api/server
 
-This repository contains template configurations and base setups for EquiSafe packages. It provides a standardized foundation for creating new packages within the EquiSafe ecosystem.
+Server-side library for the Smart Endpoint framework. Provides NestJS modules and services for auto-generating API endpoints based on your data models with Sequelize ORM integration.
 
 ## Features
 
-- TypeScript configuration
-- ESLint and Prettier setup for code quality
-- Jest testing framework
-- Automated release process with semantic-release
+- **Smart Endpoints**: Auto-generated API endpoints based on your data models
+  - List views with dynamic filtering and nested property support
+  - Aggregate views for data summarization
+  - Time series analysis for temporal data
+  - Distribution analytics for statistical insights
+  - Forecasting capabilities
 
-## Getting Started
+- **Integration with Sequelize**: Seamless integration with Sequelize ORM
+  - Automatic model discovery and relationship handling
+  - Support for complex nested queries with circular references
+  - Transaction support for data integrity
+  - Proper handling of various relationship types (1:1, 1:Many, Many:Many)
 
-### Prerequisites
+- **Advanced Query Features**:
+  - Nested search functionality across related entities
+  - Case-insensitive string filtering with Sequelize operators
+  - Selective searchable field detection
+  - Safe handling of circular schema references
 
-- Node.js >= 22.0.0
-- PNPM 10.13.1 or higher
-
-### Installation
+## Installation
 
 ```bash
-pnpm install
+npm install @smart-api/server
+# or
+yarn add @smart-api/server
+# or
+pnpm add @smart-api/server
 ```
 
-### Development
+## Usage
+
+### Using AbstractRepository
+
+The server package provides an `AbstractRepository` class that you can extend to create repositories with built-in support for dynamic queries, analytics, and more:
+
+```typescript
+import { AbstractRepository } from '@smart-api/server';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { UserModel } from './models/user.model';
+import { userSchema } from './schemas/user.schema';
+
+@Injectable()
+export class UserRepository extends AbstractRepository<UserModel, typeof userSchema> {
+  constructor(
+    @InjectModel(UserModel)
+    private readonly userModel: typeof UserModel,
+  ) {
+    super(userModel, userSchema);
+  }
+}
+```
+
+### Using Repository Methods
+
+Once you've created your repository, you can use its methods in your services or controllers:
+
+```typescript
+import { Injectable } from '@nestjs/common';
+import { UserRepository } from './user.repository';
+import { QueryOptionsDto } from '@smart-api/common';
+
+@Injectable()
+export class UserService {
+  constructor(private readonly userRepository: UserRepository) {}
+
+  async findAll(queryOptions: QueryOptionsDto) {
+    return this.userRepository.findAllWithQueryBuilder({}, queryOptions);
+  }
+  
+  async getAnalytics(options: TimeSeriesAnalyticsDto) {
+    return this.userRepository.getTimeSeries({}, options);
+  }
+  
+  async getDistribution(options: DistributionAnalyticsDto) {
+    return this.userRepository.getDistribution({}, options);
+  }
+  
+  async getAggregation(options: AggregationAnalyticsDto) {
+    return this.userRepository.getAggregation({}, options);
+  }
+}
+```
+
+## Docker Support
+
+The server package includes Docker support for easy development and deployment. See the example applications for Docker configuration details.
+
+## Testing
 
 ```bash
-# Run tests
 pnpm test
-
-# Build the package
-pnpm build
-
-# Lint code
-pnpm lint
-
-# Format code
-pnpm format
 ```
-
-### Conventional Commits
-
-This project uses [Conventional Commits](https://www.conventionalcommits.org/) for standardized commit messages. We've set up Commitizen to help you create properly formatted commit messages.
-
-#### Setup Git Alias (Recommended)
-
-Run the following command to set up a Git alias for Commitizen:
-
-```bash
-pnpm setup-git-aliases
-```
-
-After running this command, you can use:
-- `git cz` - Shorthand for using Commitizen to create conventional commits
-
-#### Alternative: Using npm/pnpm scripts
-
-If you prefer not to modify your Git aliases, you can use:
-
-```bash
-pnpm commit
-```
-
-## Project Structure
-
-- `src/` - Source code
-- `tests/` - Test files
-- `dist/` - Compiled output (generated)
-
-## Versioning and Releases
-
-This project uses automated semantic versioning. See [VERSIONING.md](./VERSIONING.md) for detailed information about the versioning and release process.
 
 ## License
 
-UNLICENSED - See the [LICENSE](./LICENSE) file for details.
+UNLICENSED
